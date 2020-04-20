@@ -1,10 +1,7 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
@@ -12,8 +9,14 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-public class RozetkaVerificationOfFiltersFactory {
+public class RozetkaVerificationOfFiltersTestFactory {
     String baseUrl = "https://rozetka.com.ua/";
+    String searchText = "samsung";
+    String minPrice = "5000";
+    String maxPrice = "15000";
+    RozetkaHomePageFactory homePage;
+    RozetkaCategoryListingPageFactory categoryListingPage;
+    RozetkaProductListingPageFactory productListingPage;
 
     WebDriver driver;
     WebDriverWait wait;
@@ -34,52 +37,49 @@ public class RozetkaVerificationOfFiltersFactory {
 
     @Test
     public void addToFiltersAcerAndAsus() throws Exception {
-        driver.findElement(By.name("search")).sendKeys("samsung" + Keys.ENTER);
-        WebElement tablet = wait.until(ExpectedConditions.visibilityOfElementLocated(By.partialLinkText("Планшеты")));
-        tablet.click();
-        WebElement acerFilter = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a label[for=Acer]")));
-        acerFilter.click();
-        driver.findElement(By.cssSelector("a label[for=Asus]")).click();
-        List<WebElement> result = driver.findElements(By.cssSelector("span[class=goods-tile__title]"));
+        homePage = new RozetkaHomePageFactory(driver);
+        categoryListingPage = new RozetkaCategoryListingPageFactory(driver);
+        productListingPage = new RozetkaProductListingPageFactory(driver);
+        homePage.performSearchRequest(searchText);
+        categoryListingPage.waitProductFilterAndClick();
+        productListingPage.addAcerFiler();
+        productListingPage.addAsusFilter();
+        List<WebElement> result = productListingPage.getAllProductsTitle();
         for (int i = 0; i < result.size(); i++) {
-            if (!(result.get(i).getText().toLowerCase().contains("samsung") || result.get(i).getText().toLowerCase().contains("acer") || result.get(i).getText().toLowerCase().contains("asus"))) {
-                throw new Exception(result.get(i).getText().toLowerCase() + " no samsung or acer or asus");
+            String productName = result.get(i).getText().toLowerCase();
+            if (!(productName.contains("samsung") || productName.contains("acer") || productName.contains("asus"))) {
+                throw new Exception(productName + " this product is not related to the next brands: samsung, acer, asus");
             }
         }
     }
 
     @Test
     public void priceFilter() throws Exception {
-        driver.findElement(By.name("search")).sendKeys("samsung" + Keys.ENTER);
-        WebElement tablet = wait.until(ExpectedConditions.visibilityOfElementLocated(By.partialLinkText("Планшеты")));
-        tablet.click();
-        WebElement priceMin = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[formcontrolname=min]")));
-        priceMin.click();
-        priceMin.clear();
-        priceMin.sendKeys("5000");
-        WebElement priceMax = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[formcontrolname=max]")));
-        priceMax.click();
-        priceMax.clear();
-        priceMax.sendKeys("15000");
-        driver.findElement(By.cssSelector("fieldset > div > button")).click();
-        List<WebElement> searchResults = driver.findElements(By.cssSelector("p span[class=goods-tile__price-value]"));
-        for (int i = 0; i < searchResults.size(); i++) {
-            int temp = Integer.parseInt(searchResults.get(i).getText().replaceAll(" ", ""));
-            if (temp < 5000 || temp > 15000) {
-                throw new Exception(searchResults.get(i).getText() + "  <5000 || >15000");
+        homePage = new RozetkaHomePageFactory(driver);
+        categoryListingPage = new RozetkaCategoryListingPageFactory(driver);
+        productListingPage = new RozetkaProductListingPageFactory(driver);
+        homePage.performSearchRequest(searchText);
+        categoryListingPage.waitProductFilterAndClick();
+        productListingPage.updateFiltersMinAndMaxPrice(minPrice, maxPrice);
+        List<WebElement> result = productListingPage.getAllProductPrice();
+        for (int i = 0; i < result.size(); i++) {
+            int priceInt = Integer.parseInt(result.get(i).getText().replaceAll(" ", ""));
+            if (priceInt < Integer.parseInt(minPrice) || priceInt > Integer.parseInt(maxPrice)) {
+                throw new Exception("price " + priceInt + " is not in range  from " + minPrice + " to " + maxPrice);
             }
         }
     }
 
+
     @Test
     public void addToFilterGalaxyA10() throws Exception {
-        driver.findElement(By.name("search")).sendKeys("samsung" + Keys.ENTER);
-        WebElement tablet = wait.until(ExpectedConditions.visibilityOfElementLocated(By.partialLinkText("Планшеты")));
-        tablet.click();
-        WebElement GalaxyA10Filter = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a label[for='Galaxy Tab A 10.1']")));
-        GalaxyA10Filter.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span[class=goods-tile__title]")));
-        List<WebElement> result = driver.findElements(By.cssSelector("span[class=goods-tile__title]"));
+        homePage = new RozetkaHomePageFactory(driver);
+        categoryListingPage = new RozetkaCategoryListingPageFactory(driver);
+        productListingPage = new RozetkaProductListingPageFactory(driver);
+        homePage.performSearchRequest(searchText);
+        categoryListingPage.waitProductFilterAndClick();
+        productListingPage.addGalaxyA10Filter();
+        List<WebElement> result = productListingPage.getAllProductsTitle();
         for (int i = 0; i < result.size(); i++) {
             if (!(result.get(i).getText().toLowerCase().contains("galaxy tab a 10.1"))) {
                 throw new Exception(result.get(i).getText().toLowerCase() + " no Galaxy Tab A 10.1");

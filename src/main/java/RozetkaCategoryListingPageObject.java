@@ -4,24 +4,18 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class RozetkaProductListingPageObject {
+public class RozetkaCategoryListingPageObject {
     WebDriver webDriver;
     WebDriverWait webDriverWait;
-    By nameProductFilter = By.partialLinkText("Планшеты");
-    By 
+    By nameCategoty = By.partialLinkText("Планшеты");
 
-    public RozetkaProductListingPageObject(WebDriver webDriver) {
+    public RozetkaCategoryListingPageObject(WebDriver webDriver) {
         this.webDriver = webDriver;
         this.webDriverWait = new WebDriverWait(webDriver, 10);
     }
 
     public void waitProductFilterAndClick() {
-        WebElement tablet = webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(nameProductFilter));
+        WebElement tablet = webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(nameCategoty));
         tablet.click();
     }
-
-    WebElement acerFilter = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a label[for=Acer]")));
-        acerFilter.click();
-        driver.findElement(By.cssSelector("a label[for=Asus]")).click();
-
 }
