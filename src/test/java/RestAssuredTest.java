@@ -1,3 +1,4 @@
+import API.*;
 import io.restassured.RestAssured;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -94,7 +95,7 @@ public class RestAssuredTest {
                 .as(PostResponseModel.class);
         PostResponseModel expectedResult = new PostResponseModel("success", new ResponseData(postName, postSalary, postAge));
         assertEquals(result, expectedResult);
-        id = result.data.id;
+        //id = result.data.id;
     }
 
     @Test(priority = 6)

@@ -1,14 +1,13 @@
-import com.codeborne.selenide.ElementsCollection;
+import Fragment.CitrusBasketFragment;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Selenide.*;
 
-public class CitrusProductPage {
+public class CitrusProductPage extends CitrusBasePage {
     SelenideElement productPrice = $x("//div[@class='normal__prices']/div[@class='price']/span/span");
     SelenideElement payButton = $x("//div[@class='normal']/button[contains(text(),'Купить')]");
-    SelenideElement totalPrice = $(".ctrs-basket-footer__new-price");
-    SelenideElement popUp = $(".el-dialog.el-dialog--medium");
-    ElementsCollection productNames = $$(".ctrs-basket-product");
+
+    CitrusBasketFragment citrusBasketFragment = new CitrusBasketFragment();
 
     public String getProductPrice() {
         return productPrice.getText();
@@ -19,15 +18,7 @@ public class CitrusProductPage {
         return this;
     }
 
-    public SelenideElement getBasketTotalPrice() {
-        return totalPrice;
-    }
-
-    public SelenideElement getBasket() {
-        return popUp;
-    }
-
-    public ElementsCollection getProductNamesPromoBasket() {
-        return productNames;
+    public CitrusBasketFragment getCitrusBasketFragment() {
+        return citrusBasketFragment;
     }
 }
