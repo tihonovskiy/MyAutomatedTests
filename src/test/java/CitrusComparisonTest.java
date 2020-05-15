@@ -1,16 +1,22 @@
+import Citrus.*;
+import Steps.CitrusComparePageSteps;
+import Steps.CitrusHomePageSteps;
+import Steps.CitrusProductListPageSteps;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selenide.*;
 
 public class CitrusComparisonTest {
-    CitrusHomePage homePage;
-    CitrusProductListPage productListPage;
-    CitrusProductPage productPage;
-    CitrusComparePage comparePage;
+    CitrusHomePageSteps homePageSteps;
+    CitrusProductListPageSteps productListPageSteps;
+    CitrusComparePageSteps comparePageSteps;
 
     @BeforeClass
     public void setup() {
@@ -18,29 +24,41 @@ public class CitrusComparisonTest {
         Configuration.startMaximized = true;
         Configuration.timeout = 10000;
         open("");
-        homePage = new CitrusHomePage();
-        productListPage = new CitrusProductListPage();
-        productPage = new CitrusProductPage();
-        comparePage = new CitrusComparePage();
+        homePageSteps = new CitrusHomePageSteps();
+        productListPageSteps = new CitrusProductListPageSteps();
+        comparePageSteps = new CitrusComparePageSteps();
+    }
+
+    @BeforeMethod
+    public void clearCart() {
+        clearBrowserLocalStorage();
+        open("");
+    }
+
+    @AfterMethod
+    public void screenshots(ITestResult result) {
+        if (result.getStatus() == ITestResult.FAILURE) {
+            CitrusBasePage.screenshot();
+        }
     }
 
     @Test
-    public void compareTwoPlusOneroducts() {
-        homePage.hoverMenuLine("Ноутбуки, планшеты, МФУ")
-                .clickLinkInMenuLaptopAcer();
-        productListPage.waitForPageToLoad();
-        String firstProductPrice = productListPage.findLaptopByIdAndGetPrice(7);
-        String secondProductPrice = productListPage.findLaptopByIdAndGetPrice(8);
-        String firstProductName = productListPage.findLaptopByIdAndGetName(7);
-        String secondProductName = productListPage.findLaptopByIdAndGetName(8);
-        productListPage.clickButtonAddToComparisonLaptop(7);
-        productListPage.clickButtonAddToComparisonLaptop(8);
-        productListPage.clickComparisonButton();
-        comparePage.addOneProduct();
-        String thirdProductName = comparePage.getProductName();
-        String thirdProductPrice = comparePage.getProductPrice();
-        comparePage.clickAddButton();
-        ElementsCollection elements = comparePage.getProductsInCompare();
+    public void compareTwoPlusOneroducts() throws Exception {
+        homePageSteps.clickOnLinkAcerInMenu("Ноутбуки, планшеты, МФУ");
+        Thread.sleep(3000);
+        String firstProductPrice = productListPageSteps.findLaptopByIdAndGetPrice(7);
+        String secondProductPrice = productListPageSteps.findLaptopByIdAndGetPrice(8);
+        String firstProductName = productListPageSteps.findLaptopByIdAndGetName(7);
+        String secondProductName = productListPageSteps.findLaptopByIdAndGetName(8);
+        productListPageSteps.clickButtonAddToComparisonLaptopById(7);
+        Thread.sleep(1000);
+        productListPageSteps.clickButtonAddToComparisonLaptopById(8);
+        productListPageSteps.clickComparisonButton();
+        comparePageSteps.addOneProduct();
+        String thirdProductName = comparePageSteps.getNameNewProduct();
+        String thirdProductPrice = comparePageSteps.getPriceNewProduct();
+        comparePageSteps.clickAddNewProductButton();
+        ElementsCollection elements = comparePageSteps.getAllProductInCompare();
         elements.get(0).shouldHave(Condition.text(secondProductPrice));
         elements.get(2).shouldHave(Condition.text(thirdProductPrice));
         elements.get(4).shouldHave(Condition.text(firstProductPrice));

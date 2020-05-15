@@ -1,14 +1,19 @@
+import Citrus.*;
+import Steps.CitrusHomePageSteps;
+import Steps.CitrusProductListPageSteps;
 import com.codeborne.selenide.Configuration;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.codeborne.selenide.Selenide.clearBrowserLocalStorage;
 import static com.codeborne.selenide.Selenide.open;
 
 public class CitrusFilterTest {
-    CitrusHomePage homePage;
-    CitrusProductListPage productListPage;
-    CitrusProductPage productPage;
-    CitrusComparePage comparePage;
+    CitrusHomePageSteps homePageSteps;
+    CitrusProductListPageSteps productListPageSteps;
 
     @BeforeClass
     public void setup() {
@@ -16,34 +21,41 @@ public class CitrusFilterTest {
         Configuration.startMaximized = true;
         Configuration.timeout = 10000;
         open("");
-        homePage = new CitrusHomePage();
-        productListPage = new CitrusProductListPage();
-        productPage = new CitrusProductPage();
-        comparePage = new CitrusComparePage();
+        homePageSteps = new CitrusHomePageSteps();
+        productListPageSteps = new CitrusProductListPageSteps();
+    }
+
+    @BeforeMethod
+    public void clearCart() {
+        clearBrowserLocalStorage();
+        open("");
+    }
+
+    @AfterMethod
+    public void screenshots(ITestResult result) {
+        if (result.getStatus() == ITestResult.FAILURE) {
+            CitrusBasePage.screenshot();
+        }
     }
 
     @Test
     public void usePriceFilter() throws Exception {
-        homePage.hoverMenuLine("Смартфоны")
-                .clickLinkInMenuSamsung();
-        productListPage.getCitrusFilterFragment().addMinMaxFilterPrice("3000", "15000");
-        productListPage.getCitrusFilterFragment().verifyMinMaxPrice();
-        productListPage.getCitrusFilterFragment().verifyBrand("samsung");
+        homePageSteps.clickOnLinkSamsungInMenu("Смартфоны");
+        productListPageSteps.addFilterMinMaxProce("3000", "15000");
+        productListPageSteps.verifyBrandAndMinMaxPrice("samsung");
     }
 
     @Test
     public void useMemorySizeFilter() throws Exception {
-        homePage.hoverMenuLine("Смартфоны")
-                .clickLinkInMenuXiaomi();
-        productListPage.getCitrusFilterFragment().addMemoryFilter();
-        productListPage.getCitrusFilterFragment().verifySmartphoneMemory();
+        homePageSteps.clickOnLinkXioamiInMenu("Смартфоны");
+        productListPageSteps.addFilterMemory();
+        productListPageSteps.verifyMemory();
     }
 
     @Test
     public void useBodyMaterialFilter() throws Exception {
-        homePage.hoverMenuLine("Смартфоны")
-                .clickLinkInMenuGoogle();
-        productListPage.getCitrusFilterFragment().addBodyMaterialFilter();
-        productListPage.getCitrusFilterFragment().verifyBrand("google");
+        homePageSteps.clickOnLinkGoogleInMenu("Смартфоны");
+        productListPageSteps.addFilterMaterial();
+        productListPageSteps.verifyBrandAndBody("google");
     }
 }

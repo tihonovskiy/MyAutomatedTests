@@ -1,6 +1,8 @@
 import API.*;
+import Listener.LogListener;
 import io.restassured.RestAssured;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 
+@Listeners(LogListener.class)
 public class RestAssuredTest {
     String postName = "Test";
     String postSalary = "777";

@@ -1,3 +1,5 @@
+package Citrus;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -6,7 +8,7 @@ import java.util.List;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class CitrusComparePage {
+public class CitrusComparePage extends CitrusBasePage {
     ElementsCollection productNames = $$(".ctrs-basket-product");
     SelenideElement popUp = $(".el-dialog.el-dialog--medium");
     SelenideElement totalPrice = $(".ctrs-basket-footer__new-price");

@@ -1,3 +1,5 @@
+package Citrus;
+
 import Fragment.CitrusSearchFragment;
 import com.codeborne.selenide.SelenideElement;
 
